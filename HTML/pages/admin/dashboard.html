@@ -1,0 +1,42 @@
+<header class="topbar" aria-label="Dashboard Top Bar">
+    <h1>DASHBOARD (Admin)</h1>
+  </header>
+  <section class="stats" aria-label="Dashboard Statistics">
+    <div class="card">
+      <h3>Total Patients</h3>
+      <p class="number">0</p>
+      <span>Updated Today</span>
+    </div>
+    <div class="card">
+      <h3>Active Wristbands</h3>
+      <p class="number">0</p>
+    </div>
+    <div class="card">
+      <h3>Check-ins Today</h3>
+      <p class="number">0</p>
+    </div>
+  </section>
+  <section class="charts-devices" aria-label="Charts and Connected Devices">
+    <div class="charts">
+      <div class="chart-box wide">
+        <h3>Bites per Month</h3>
+        <canvas id="bitesChart" aria-label="Bites per Month Chart"></canvas>
+      </div>
+      <div class="chart-box">
+        <h3>Vaccine Usage (recent)</h3>
+        <canvas id="vaccineChart" aria-label="Vaccine Usage Chart"></canvas>
+      </div>
+      <div class="chart-box">
+        <h3>Wristband (active/inactive)</h3>
+        <canvas id="wristbandChart" aria-label="Wristband Status Chart"></canvas>
+      </div>
+    </div>
+    <div class="devices">
+      <h3>Connected Devices</h3>
+      <p class="subtitle">Currently registered wristbands for monitoring.</p>
+      <ul></ul>
+    </div>
+  </section>
+
+
+

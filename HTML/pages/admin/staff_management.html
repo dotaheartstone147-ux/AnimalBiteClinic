@@ -1,0 +1,38 @@
+<div class="admin-page">
+  <header class="topbar">
+    <h1>Staff Management</h1>
+  </header>
+  <section>
+    <div class="admin-card" style="max-width:520px">
+      <h3>Set Role by Email</h3>
+      <div class="admin-form-group">
+        <label for="staffEmail">Email</label>
+        <input id="staffEmail" class="admin-input" type="email" placeholder="user@example.com">
+      </div>
+      <div class="admin-form-group">
+        <label for="staffRole">Role</label>
+        <select id="staffRole" class="admin-select">
+          <option value="staff">Staff</option>
+          <option value="admin">Admin</option>
+        </select>
+      </div>
+      <button id="assignRoleBtn" class="admin-btn">Assign Role</button>
+      <div id="roleMsg" style="margin-top:8px"></div>
+    </div>
+    <div class="admin-card" style="max-width:880px">
+      <div class="admin-toolbar">
+        <input id="searchRole" class="admin-input" placeholder="Search email">
+        <button id="clearSearch" class="admin-btn secondary">Clear</button>
+      </div>
+      <table class="admin-table">
+        <thead>
+          <tr><th>Email</th><th>Role</th><th>Action</th></tr>
+        </thead>
+        <tbody id="rolesTableBody"></tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+
+

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <link rel="stylesheet" href="../../CSS/register.css">
+</head>
+<body>
+    <div class="register-page">
+        <header class="topbar">
+            <div>
+                <h1>Register</h1>
+                <p class="subtitle">Managed the selected module here</p>
+            </div>
+            
+        </header>
+
+        <section class="register-panel">
+            <h2>Register Patient</h2>
+            <form id="registerform"  class="register-form" >
+                <div class="row">
+                    <input type="text"  id='fullname' placeholder="Full Name" class="input">
+                    <input type="text"  id="contactNo" placeholder="Contact No." class="input">
+                </div>
+                <div class="row-textarea">
+                    <textarea id="Address" placeholder="Address" class="textarea"></textarea>
+                </div>
+                <div class="row align-end">
+                    <select class="select" id="select">
+                        <option value="" disabled selected hidden>Assign Wristband</option>
+                        <option value="WB001">WB001</option>
+                        <option value="WB002">WB002</option>
+                        <option value="WB003">WB003</option>
+                        <option value="WB004">WB004</option>
+                        <option value="WB005">WB005</option>
+                        <option value="WB006">WB006</option>
+                        <option value="WB007">WB007</option>
+                        <option value="WB008">WB008</option>
+                        <option value="WB009">WB009</option>
+                        <option value="WB010">WB010</option>
+                     
+                    </select>
+                    <button class="btn-primary" type="submit">Register</button>
+                </div>
+            </form>
+        </section>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-database-compat.js"></script>
+    <script src="../../Javascript/firebase.js"></script>
+</body>
+</html>
+

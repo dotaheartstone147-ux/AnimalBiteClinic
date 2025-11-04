@@ -1,0 +1,80 @@
+.admin-page {
+  padding: 16px;
+}
+
+.admin-page .topbar h1 {
+  margin: 0 0 12px 0;
+}
+
+.admin-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+
+.admin-card + .admin-card {
+  margin-top: 16px;
+}
+
+.admin-form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 12px;
+}
+
+.admin-form-group label {
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.admin-input,
+.admin-select {
+  height: 36px;
+  padding: 6px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+}
+
+.admin-btn {
+  display: inline-block;
+  background: #2563eb;
+  color: #fff;
+  border: 0;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.admin-btn.secondary {
+  background: #6b7280;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-table th,
+.admin-table td {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.admin-table th {
+  background: #f9fafb;
+  font-weight: 600;
+}
+
+.admin-toolbar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+
+

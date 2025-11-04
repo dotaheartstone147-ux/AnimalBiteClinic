@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animal Bite Clinic Dashboard</title>
+
+    <link href="https://fonts.googleapis.com/css?family=Poppins:400,500,600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+     <link rel="stylesheet" href="../CSS/dashy.css">
+    <script src="../Javascript/dashboard.js"></script>
+</head>
+<body>
+    <div class="dashboard">
+        <aside class="sidebar">
+            <div class="logo">
+                <img src="../icons/meow_white.png" alt="Logo">
+                <h2>Animal Bite Clinic</h2>
+            </div>
+            <ul class="menu">
+                <li class="active" onclick="loadPage('pages/dashboard.html', this)">
+                    <img src="../icons/dash-icons/1.png" alt=""> Dashboard
+                </li>
+                <li onclick="loadPage('pages/animal_bite_record.html', this)">
+                    <img src="../icons/dash-icons/2.png" alt=""> Animal Bite Record
+                </li>
+                <li onclick="loadPage('pages/register.html', this)">
+                    <img src="../icons/dash-icons/3.png" alt=""> Register Patient
+                </li>
+                <li onclick="loadPage('pages/wristbands.html', this)">
+                    <img src="../icons/dash-icons/4.png" alt=""> Wristbands
+                </li>
+                <li onclick="loadPage('pages/checkins.html', this)">
+                    <img src="../icons/dash-icons/5.png" alt=""> Check-ins
+                </li>
+                <li onclick="loadPage('pages/billing.html', this)">
+                    <img src="../icons/dash-icons/6.png" alt=""> Billing/Payment
+                </li>
+                <li onclick="loadPage('pages/sms.html', this)">
+                    <img src="../icons/dash-icons/7.png" alt=""> SMS Notifications
+                </li>
+                <li onclick="loadPage('pages/report.html', this)">
+                    <img src="../icons/dash-icons/8.png" alt=""> Report & Analysis
+                </li>
+                <li onclick="loadPage('pages/emergency.html', this)">
+                    <img src="../icons/dash-icons/9.png" alt=""> Emergency Protocols
+                </li>
+                <li onclick="logout()">
+                    <img src="../icons/dash-icons/master.png" alt=""> Logout
+                </li>
+            </ul>
+        </aside>
+
+        <main class="main-content" id="main-content">
+            </main>
+    </div>
+    <script>
+        function loadPage(url, element) {
+            fetch(url)
+                .then(res => res.text())
+                .then(html => {
+                    const mainContent = document.getElementById('main-content');
+                    mainContent.innerHTML = html;
+
+                    if (url.includes('dashboard.html')) {
+                        if (typeof Chart === 'undefined') {
+                            console.error('Chart.js is not available');
+                            return;
+                        }
+
+                        const script = document.createElement('script');
+                        script.src = '../Javascript/dashboard.js';
+                        mainContent.appendChild(script);
+
+                        script.onload = () => {
+                            setTimeout(() => {
+                                if (typeof initializeCharts === 'function') {
+                                    initializeCharts();
+                                } else {
+                                    console.error('initializeCharts function not found');
+                                }
+                                if (typeof loadDashboardStats === 'function') {
+                                    loadDashboardStats();
+                                }
+                            }, 100);
+                        };
+                    }
+
+                    if (url.includes('animal_bite_record.html')) {
+
+                        if (!document.querySelector('link[href="../CSS/bite_record.css"]')) {
+                            const link = document.createElement('link');
+                            link.rel = 'stylesheet';
+                            link.href = '../CSS/bite_record.css';
+                            document.head.appendChild(link);
+                        }
+
+                        const existing = document.getElementById('bite-record-js');
+                        if (existing) existing.remove();
+                        const script = document.createElement('script');
+                        script.src = '../Javascript/bite_record.js';
+                        script.id = 'bite-record-js';
+                        mainContent.appendChild(script);
+
+                        script.onload = () => {
+                            if (typeof loadBiteRecords === 'function') {
+                                loadBiteRecords();
+                            }
+                        };
+                    }
+
+                    if (url.includes('register.html')) {
+                        if (!document.querySelector('link[href="../CSS/register.css"]')) {
+                            const link = document.createElement('link');
+                            link.rel = 'stylesheet';
+                            link.href = '../CSS/register.css';
+                            document.head.appendChild(link);
+                        }
+
+                        if (typeof initRegisterForm === 'function') {
+                            initRegisterForm();
+                        }
+                    }
+
+                    if (url.includes('checkins.html')) {
+
+                        if (!document.querySelector('link[href="../CSS/checkins.css"]')) {
+                            const link = document.createElement('link');
+                            link.rel = 'stylesheet';
+                            link.href = '../CSS/checkins.css';
+                            document.head.appendChild(link);
+                        }
+
+                        const existing = document.getElementById('checkins-js');
+                        if (existing) existing.remove();
+                        const script = document.createElement('script');
+                        script.src = '../Javascript/checkins.js';
+                        script.id = 'checkins-js';
+                        mainContent.appendChild(script);
+                    }
+
+                    if (url.includes('wristbands.html')) {
+                        if (!document.querySelector('link[href="../CSS/wristbands.css"]')) {
+                            const link = document.createElement('link');
+                            link.rel = 'stylesheet';
+                            link.href = '../CSS/wristbands.css';
+                            document.head.appendChild(link);
+                        }
+                        const existingW = document.getElementById('wristbands-js');
+                        if (existingW) existingW.remove();
+                        const scriptW = document.createElement('script');
+                        scriptW.src = '../Javascript/wristbands.js';
+                        scriptW.id = 'wristbands-js';
+                        mainContent.appendChild(scriptW);
+                        scriptW.onload = () => { 
+                            if (typeof loadWristbands === 'function') loadWristbands();
+                            if (typeof initWristbandsPage === 'function') initWristbandsPage();
+                        };
+                    }
+
+                    if (url.includes('billing.html')) {
+                        if (!document.querySelector('link[href="../CSS/billing.css"]')) {
+                            const link = document.createElement('link');
+                            link.rel = 'stylesheet';
+                            link.href = '../CSS/billing.css';
+                            document.head.appendChild(link);
+                        }
+                        const existingB = document.getElementById('billing-js');
+                        if (existingB) existingB.remove();
+                        const scriptB = document.createElement('script');
+                        scriptB.src = '../Javascript/billing.js';
+                        scriptB.id = 'billing-js';
+                        mainContent.appendChild(scriptB);
+                        scriptB.onload = () => {
+                            if (typeof initializeBilling === 'function') {
+                                initializeBilling();
+                            }
+                            if (typeof populatePatientSelect === 'function') {
+                                populatePatientSelect();
+                            }
+                            if (typeof initBillingData === 'function') {
+                                initBillingData();
+                            }
+                        };
+                    }
+
+                    if (url.includes('report.html')) {
+                        if (!document.querySelector('link[href="../CSS/report.css"]')) {
+                            const link = document.createElement('link');
+                            link.rel = 'stylesheet';
+                            link.href = '../CSS/report.css';
+                            document.head.appendChild(link);
+                        }
+                        const existing = document.getElementById('report-js');
+                        if (existing) existing.remove();
+                        const script = document.createElement('script');
+                        script.src = '../Javascript/report.js';
+                        script.id = 'report-js';
+                        mainContent.appendChild(script);
+                    }
+
+                    if (url.includes('admin/dashboard.html')) {
+                        const script = document.createElement('script');
+                        script.src = '../Javascript/dashboard.js';
+                        mainContent.appendChild(script);
+                        script.onload = () => {
+                            if (typeof initializeCharts === 'function') initializeCharts();
+                            if (typeof loadDashboardStats === 'function') loadDashboardStats();
+                        };
+                    }
+                    if (url.includes('admin/animal_bite_record.html')) {
+                        if (!document.querySelector('link[href="../CSS/bite_record.css"]')) {
+                            const link = document.createElement('link');
+                            link.rel = 'stylesheet';
+                            link.href = '../CSS/bite_record.css';
+                            document.head.appendChild(link);
+                        }
+                        const existing = document.getElementById('bite-record-js');
+                        if (existing) existing.remove();
+                        const script = document.createElement('script');
+                        script.src = '../Javascript/bite_record.js';
+                        script.id = 'bite-record-js';
+                        mainContent.appendChild(script);
+                        script.onload = () => { 
+                            if (typeof loadBiteRecords === 'function') loadBiteRecords(); 
+                            if (typeof initBiteRecordPage === 'function') initBiteRecordPage();
+                        };
+                    }
+                    if (url.includes('admin/sms.html')) {
+                        if (!document.querySelector('link[href="../CSS/sms.css"]')) {
+                            const link = document.createElement('link');
+                            link.rel = 'stylesheet';
+                            link.href = '../CSS/sms.css';
+                            document.head.appendChild(link);
+                        }
+                        const existing = document.getElementById('sms-js');
+                        if (existing) existing.remove();
+                        const script = document.createElement('script');
+                        script.src = '../Javascript/sms.js';
+                        script.id = 'sms-js';
+                        mainContent.appendChild(script);
+                    }
+                    if (url.includes('admin/staff_management.html')) {
+                        const existing = document.getElementById('staff-mgmt-js');
+                        if (existing) existing.remove();
+                        const script = document.createElement('script');
+                        script.src = '../Javascript/staff_management.js';
+                        script.id = 'staff-mgmt-js';
+                        mainContent.appendChild(script);
+                    }
+                    if (url.includes('admin/schedule_doses.html')) {
+                        if (!document.querySelector('link[href="../CSS/admin.css"]')) {
+                            const link = document.createElement('link');
+                            link.rel = 'stylesheet';
+                            link.href = '../CSS/admin.css';
+                            document.head.appendChild(link);
+                        }
+                        const existing = document.getElementById('schedule-doses-js');
+                        if (existing) existing.remove();
+                        const script = document.createElement('script');
+                        script.src = '../Javascript/schedule_doses.js';
+                        script.id = 'schedule-doses-js';
+                        mainContent.appendChild(script);
+                    }
+
+                    document.querySelectorAll('.menu li').forEach(li => li.classList.remove('active'));
+                    element.classList.add('active');
+                })
+                .catch(err => {
+                    document.getElementById('main-content').innerHTML = "<h2>Page not found</h2>";
+                    console.error("Error loading page:", err);
+                });
+        }
+
+        window.onload = () => { if (typeof initRoleMenu === 'function') initRoleMenu(); loadPage('pages/dashboard.html', document.querySelector('.menu li')); };
+    </script>
+     <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-app-compat.js"></script>
+     <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-database-compat.js"></script>
+     <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-auth-compat.js"></script>
+     <script src="../Javascript/firebase.js"></script>
+     <script>
+        function logout(){
+            try {
+                if (window.firebase && firebase.auth) {
+                    firebase.auth().signOut().then(function(){
+                        window.location.href = 'Login Page.html';
+                    }).catch(function(err){
+                        console.error('Logout failed', err);
+                        window.location.href = 'Login Page.html';
+                    });
+                } else {
+                    window.location.href = 'Login Page.html';
+                }
+            } catch (e) {
+                window.location.href = 'Login Page.html';
+            }
+        }
+     </script>
+
+</body>
+</html>
+
