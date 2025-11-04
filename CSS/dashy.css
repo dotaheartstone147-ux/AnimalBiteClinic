@@ -20,6 +20,8 @@ body {
   background: #2e6a96;
   color: white;
   width: 240px;
+  min-width: 240px;            /* prevent shrink on nested flex contexts */
+  flex: 0 0 240px;             /* lock width when inside flex container */
   padding: 20px;
   display: flex;
   flex-direction: column;
