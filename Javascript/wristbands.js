@@ -36,7 +36,7 @@ function initializeWristbands() {
                 var registerMenuItem = document.querySelector('.menu li:nth-child(3)') || document.querySelector('.menu li');
                 window.loadPage('pages/register.html', registerMenuItem);
             } else {
-                window.location.href = '/HTML/pages/register.html';
+                window.location.href = 'pages/register.html';
             }
         });
     }
