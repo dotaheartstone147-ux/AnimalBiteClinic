@@ -48,6 +48,40 @@ const firebaseConfig = {
     if (typeof filterAvailableWristbands === 'function') {
       filterAvailableWristbands();
     }
+
+    // Setup contact number validation
+    var contactInput = document.getElementById('contactNo');
+    if (contactInput && !contactInput.hasAttribute('data-validated')) {
+      contactInput.setAttribute('data-validated', 'true');
+      contactInput.setAttribute('maxlength', '11');
+      
+      // Only allow numeric input
+      contactInput.addEventListener('input', function(e) {
+        this.value = this.value.replace(/[^0-9]/g, '');
+      });
+
+      // Prevent non-numeric keys
+      contactInput.addEventListener('keypress', function(e) {
+        if ([46, 8, 9, 27, 13].indexOf(e.keyCode) !== -1 ||
+            (e.keyCode === 65 && e.ctrlKey === true) ||
+            (e.keyCode === 67 && e.ctrlKey === true) ||
+            (e.keyCode === 86 && e.ctrlKey === true) ||
+            (e.keyCode === 88 && e.ctrlKey === true)) {
+          return;
+        }
+        if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+          e.preventDefault();
+        }
+      });
+
+      // Validate on paste
+      contactInput.addEventListener('paste', function(e) {
+        e.preventDefault();
+        var paste = (e.clipboardData || window.clipboardData).getData('text');
+        var numbersOnly = paste.replace(/[^0-9]/g, '').substring(0, 11);
+        this.value = numbersOnly;
+      });
+    }
   }
   window.initRegisterForm = initRegisterForm;
 
@@ -57,7 +91,17 @@ const firebaseConfig = {
     var fullName = getElementVal('fullname');
     var contactNo = getElementVal('contactNo');
     var adress = getElementVal('Address');
-    var selected = getElementVal('select')
+    var selected = getElementVal('select');
+
+    // Validate contact number: must be exactly 11 digits
+    if (!contactNo || contactNo.length !== 11 || !/^\d{11}$/.test(contactNo)) {
+      alert('Please enter a valid 11-digit contact number.');
+      var contactInput = document.getElementById('contactNo');
+      if (contactInput) {
+        contactInput.focus();
+      }
+      return;
+    }
 
     saveRegister(fullName, contactNo, adress, selected)
 

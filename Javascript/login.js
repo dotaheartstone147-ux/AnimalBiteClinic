@@ -16,15 +16,33 @@ const auth = getAuth(app);
 
 const form = document.querySelector('form');
 const submitBtn = document.getElementById('submitbutton');
+const rememberMeCheckbox = document.getElementById('rememberMe');
+const usernameInput = document.getElementById('username');
+
+// Load saved email on page load
+window.addEventListener('DOMContentLoaded', function() {
+  const savedEmail = localStorage.getItem('rememberedEmail');
+  if (savedEmail) {
+    usernameInput.value = savedEmail;
+    rememberMeCheckbox.checked = true;
+  }
+});
 
 if (form && submitBtn) {
   form.addEventListener('submit', function (e) {
     e.preventDefault();
-    const email = (document.getElementById('username')).value.trim();
+    const email = usernameInput.value.trim();
     const password = (document.getElementById('password')).value;
 
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
+        // Save email if "Remember me" is checked
+        if (rememberMeCheckbox.checked) {
+          localStorage.setItem('rememberedEmail', email);
+        } else {
+          // Remove saved email if checkbox is unchecked
+          localStorage.removeItem('rememberedEmail');
+        }
         window.location.href = "./index.html";
       })
       .catch((error) => {
