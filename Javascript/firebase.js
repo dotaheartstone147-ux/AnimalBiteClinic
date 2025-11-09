@@ -12,19 +12,52 @@ const firebaseConfig = {
     return animalbiteclinicDB.once('value').then(function (snapshot) {
       var maxId = 0;
       var toUpdate = [];
+      var idMap = {}; // Track which IDs are already used
+      var duplicates = []; // Track records with duplicate IDs
+      
       snapshot.forEach(function (child) {
         var data = child.val() || {};
         var pidNum = parseInt((data.patientId || '').toString(), 10);
-        if (!isNaN(pidNum) && pidNum > maxId) maxId = pidNum;
+        
+        if (!isNaN(pidNum)) {
+          if (pidNum > maxId) maxId = pidNum;
+          
+          // Check for duplicates
+          if (idMap[pidNum]) {
+            // This ID is already used, mark both as duplicates
+            if (!duplicates.includes(idMap[pidNum])) {
+              duplicates.push(idMap[pidNum]);
+            }
+            duplicates.push(child.key);
+          } else {
+            idMap[pidNum] = child.key;
+          }
+        }
+        
         if (!data.patientId) {
           toUpdate.push(child.key);
         }
       });
+      
       var updates = [];
-      toUpdate.forEach(function (key, i) {
-        var newId = String(maxId + i + 1).padStart(2, '0');
+      var nextId = maxId + 1;
+      
+      // Fix missing IDs
+      toUpdate.forEach(function (key) {
+        var newId = String(nextId).padStart(2, '0');
         updates.push(animalbiteclinicDB.child(key).update({ patientId: newId }));
+        idMap[nextId] = key;
+        nextId++;
       });
+      
+      // Fix duplicate IDs (keep the first occurrence, reassign others)
+      duplicates.forEach(function (key) {
+        var newId = String(nextId).padStart(2, '0');
+        updates.push(animalbiteclinicDB.child(key).update({ patientId: newId }));
+        idMap[nextId] = key;
+        nextId++;
+      });
+      
       return Promise.all(updates);
     });
   }
@@ -92,6 +125,7 @@ const firebaseConfig = {
     var contactNo = getElementVal('contactNo');
     var adress = getElementVal('Address');
     var selected = getElementVal('select');
+    var vaccineType = getElementVal('vaccineType');
 
     // Validate contact number: must be exactly 11 digits
     if (!contactNo || contactNo.length !== 11 || !/^\d{11}$/.test(contactNo)) {
@@ -103,15 +137,34 @@ const firebaseConfig = {
       return;
     }
 
-    saveRegister(fullName, contactNo, adress, selected)
+    // Validate vaccine selection
+    if (!vaccineType) {
+      alert('Please select a vaccine type.');
+      var vaccineSelect = document.getElementById('vaccineType');
+      if (vaccineSelect) {
+        vaccineSelect.focus();
+      }
+      return;
+    }
+
+    saveRegister(fullName, contactNo, adress, selected, vaccineType)
 
   }
 
-  const saveRegister = (fullName, contactNo, adress, selected) => {
+  const saveRegister = (fullName, contactNo, adress, selected, vaccineType) => {
 
     animalbiteclinicDB.once('value').then(function (snapshot) {
-      var count = snapshot.numChildren() || 0;
-      var patientId = String(count + 1).padStart(2, '0');
+      // Find the maximum existing patient ID to avoid duplicates
+      var maxId = 0;
+      snapshot.forEach(function (child) {
+        var data = child.val() || {};
+        var pidNum = parseInt((data.patientId || '').toString(), 10);
+        if (!isNaN(pidNum) && pidNum > maxId) {
+          maxId = pidNum;
+        }
+      });
+      // Generate new patient ID based on max ID + 1
+      var patientId = String(maxId + 1).padStart(2, '0');
       var animalForm = animalbiteclinicDB.push();
 
       return animalForm
@@ -121,6 +174,7 @@ const firebaseConfig = {
           contactNumber: contactNo,
           address: adress,
           assignedWB: selected,
+          vaccineType: vaccineType,
           dateRegistered: new Date().toISOString()
         })
         .then(function () {

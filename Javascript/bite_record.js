@@ -21,9 +21,25 @@
       '#m-contact': tds[2] ? tds[2].textContent.trim() : 'N/A',
       '#m-address': tds[3] ? tds[3].textContent.trim() : 'N/A',
       '#m-wristband': tds[4] ? tds[4].textContent.trim() : 'N/A',
-      '#m-date': tds[5] ? tds[5].textContent.trim() : 'N/A'
+      '#m-date': tds[5] ? tds[5].textContent.trim() : 'N/A',
+      '#m-vaccine': 'N/A'
     };
     Object.keys(data).forEach(function (sel) { var el = $(sel); if (el) el.textContent = data[sel]; });
+
+    // Fetch vaccine type from Firebase using the row's data-key
+    var rowKey = row.getAttribute('data-key');
+    if (rowKey && window.firebase && firebase.database) {
+      var animalbiteclinicDB = firebase.database().ref('animalbiteclinic');
+      animalbiteclinicDB.child(rowKey).once('value').then(function(snapshot) {
+        var patientData = snapshot.val() || {};
+        var vaccineEl = $('#m-vaccine');
+        if (vaccineEl) {
+          vaccineEl.textContent = patientData.vaccineType || 'N/A';
+        }
+      }).catch(function(error) {
+        console.error('Error fetching vaccine data:', error);
+      });
+    }
   }
 
   function init() {

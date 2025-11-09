@@ -27,8 +27,14 @@
                 <div class="row-textarea">
                     <textarea id="Address" placeholder="Address" class="textarea"></textarea>
                 </div>
-                <div class="row align-end">
-                    <select class="select" id="select">
+                <div class="row">
+                    <select class="select" id="vaccineType" style="width: auto; flex: 1;">
+                        <option value="" disabled selected hidden>Select Vaccine</option>
+                        <option value="Anti-Rabies">Anti-Rabies</option>
+                        <option value="Tetanus">Tetanus</option>
+                        <option value="Both">Both (Anti-Rabies & Tetanus)</option>
+                    </select>
+                    <select class="select" id="select" style="width: auto; flex: 1;">
                         <option value="" disabled selected hidden>Assign Wristband</option>
                         <option value="WB001">WB001</option>
                         <option value="WB002">WB002</option>
@@ -42,6 +48,8 @@
                         <option value="WB010">WB010</option>
                      
                     </select>
+                </div>
+                <div class="row align-end">
                     <button class="btn-primary" type="submit">Register</button>
                 </div>
             </form>

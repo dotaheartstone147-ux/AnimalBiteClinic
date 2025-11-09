@@ -84,7 +84,7 @@ function initializeCharts() {
     wristbandChart = new Chart(wristbandCtx, {
       type: 'pie',
       data: {
-        labels: ['Active', 'Inactive'],
+        labels: ['Active', 'Available Inactive'],
         datasets: [{
           data: [0, 0],
           backgroundColor: ['#4caf50', '#f44336']
@@ -126,7 +126,11 @@ function loadChartData() {
     let antiRabiesCount = 0;
     let tetanusCount = 0;
     let activeWristbands = 0;
-    let inactiveWristbands = 0;
+    const assignedWristbands = new Set();
+    
+    // Total available wristbands (WB001-WB010)
+    const totalWristbands = ['WB001', 'WB002', 'WB003', 'WB004', 'WB005', 
+                             'WB006', 'WB007', 'WB008', 'WB009', 'WB010'];
 
     // Month names
     const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
@@ -148,19 +152,30 @@ function loadChartData() {
         }
       }
 
-      // Count vaccines: All patients get Anti-Rabies, Category 3 also get Tetanus
-      antiRabiesCount++;
-      if (data.biteCategory === '3' || data.biteCategory === 3) {
-        tetanusCount++;
+      // Count vaccines based on vaccineType field
+      if (data.vaccineType) {
+        if (data.vaccineType === 'Anti-Rabies') {
+          antiRabiesCount++;
+        } else if (data.vaccineType === 'Tetanus') {
+          tetanusCount++;
+        } else if (data.vaccineType === 'Both') {
+          antiRabiesCount++;
+          tetanusCount++;
+        }
+      } else {
+        // Fallback: if no vaccineType, assume Anti-Rabies (backward compatibility)
+        antiRabiesCount++;
       }
 
-      // Count wristbands
+      // Track assigned wristbands
       if (data.assignedWB) {
         activeWristbands++;
-      } else {
-        inactiveWristbands++;
+        assignedWristbands.add(data.assignedWB.toUpperCase());
       }
     });
+
+    // Calculate available inactive wristbands
+    const availableInactiveWristbands = totalWristbands.filter(wb => !assignedWristbands.has(wb.toUpperCase())).length;
 
     // Update Bites per Month Chart
     if (bitesChart) {
@@ -194,7 +209,8 @@ function loadChartData() {
 
     // Update Wristband Chart
     if (wristbandChart) {
-      wristbandChart.data.datasets[0].data = [activeWristbands, inactiveWristbands];
+      wristbandChart.data.labels = ['Active', 'Available Inactive'];
+      wristbandChart.data.datasets[0].data = [activeWristbands, availableInactiveWristbands];
       wristbandChart.update();
     }
 
