@@ -42,6 +42,9 @@
                 <li onclick="loadPage('pages/report.html', this)">
                     <img src="../icons/dash-icons/8.png" alt=""> Report & Analysis
                 </li>
+                <li onclick="loadPage('pages/schedule_doses.html', this)">
+                    <img src="../icons/dash-icons/9.png" alt=""> Schedule Doses
+                </li>
                 <li onclick="loadPage('pages/emergency.html', this)">
                     <img src="../icons/dash-icons/9.png" alt=""> Emergency Protocols
                 </li>
@@ -241,11 +244,31 @@
                         mainContent.appendChild(script);
                     }
                     if (url.includes('admin/staff_management.html')) {
+                        if (!document.querySelector('link[href="../CSS/admin.css"]')) {
+                            const link = document.createElement('link');
+                            link.rel = 'stylesheet';
+                            link.href = '../CSS/admin.css';
+                            document.head.appendChild(link);
+                        }
                         const existing = document.getElementById('staff-mgmt-js');
                         if (existing) existing.remove();
                         const script = document.createElement('script');
                         script.src = '../Javascript/staff_management.js';
                         script.id = 'staff-mgmt-js';
+                        mainContent.appendChild(script);
+                    }
+                    if (url.includes('schedule_doses.html') && !url.includes('admin/')) {
+                        if (!document.querySelector('link[href="../CSS/admin.css"]')) {
+                            const link = document.createElement('link');
+                            link.rel = 'stylesheet';
+                            link.href = '../CSS/admin.css';
+                            document.head.appendChild(link);
+                        }
+                        const existing = document.getElementById('schedule-doses-js');
+                        if (existing) existing.remove();
+                        const script = document.createElement('script');
+                        script.src = '../Javascript/schedule_doses.js';
+                        script.id = 'schedule-doses-js';
                         mainContent.appendChild(script);
                     }
                     if (url.includes('admin/schedule_doses.html')) {

@@ -333,7 +333,10 @@ const firebaseConfig = {
         tr.appendChild(statusTd);
 
         var batteryTd = document.createElement('td');
-        batteryTd.innerHTML = '<div class="battery"><div class="battery-bar"><div class="battery-fill high" style="width:80%"></div></div>80%</div>';
+        // Randomize battery between 20% and 100%
+        var batteryPct = Math.floor(Math.random() * 81) + 20; // 20..100
+        var batteryClass = batteryPct >= 70 ? 'high' : (batteryPct >= 40 ? 'mid' : 'low');
+        batteryTd.innerHTML = '<div class="battery"><div class="battery-bar"><div class="battery-fill ' + batteryClass + '" style="width:' + batteryPct + '%"></div></div>' + batteryPct + '%</div>';
         tr.appendChild(batteryTd);
 
         var patientIdTd = document.createElement('td');
@@ -590,7 +593,6 @@ const firebaseConfig = {
     adminItems.push(makeItem('2.png', 'Animal Bite Record (Admin)', 'pages/admin/animal_bite_record.html'));
     adminItems.push(makeItem('7.png', 'SMS (Admin)', 'pages/admin/sms.html'));
     adminItems.push(makeItem('8.png', 'Staff Management', 'pages/admin/staff_management.html'));
-    adminItems.push(makeItem('9.png', 'Schedule Doses', 'pages/admin/schedule_doses.html'));
 
     adminItems.forEach(function(li){ menu.appendChild(li); });
 
