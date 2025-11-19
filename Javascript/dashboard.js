@@ -223,6 +223,13 @@ function loadChartData() {
 document.addEventListener("DOMContentLoaded", () => {
   console.log("✅ Dashboard script loaded");
   initializeCharts();
+  
+  // Run automated SMS reminder check when dashboard loads
+  if (typeof window.checkSMSReminders === 'function') {
+    setTimeout(function() {
+      window.checkSMSReminders();
+    }, 2000); // Wait 2 seconds for Firebase to be ready
+  }
 });
 
 

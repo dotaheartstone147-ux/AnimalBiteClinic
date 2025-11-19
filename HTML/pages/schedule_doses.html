@@ -7,6 +7,22 @@
       <input id="scheduleDate" class="admin-input" type="date">
       <button id="todayBtn" class="admin-btn">Today</button>
     </div>
+    <h3 style="margin: 20px 0 10px 0; font-size: 18px; font-weight: 600;">Active Schedules</h3>
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Patient ID</th>
+          <th>Name</th>
+          <th>Dose</th>
+          <th>Time</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="scheduleTableBody"></tbody>
+    </table>
+    
+    <h3 style="margin: 30px 0 10px 0; font-size: 18px; font-weight: 600;">Completed Doses</h3>
     <table class="admin-table">
       <thead>
         <tr>
@@ -17,7 +33,7 @@
           <th>Status</th>
         </tr>
       </thead>
-      <tbody id="scheduleTableBody"></tbody>
+      <tbody id="completedTableBody"></tbody>
     </table>
   </section>
 </div>

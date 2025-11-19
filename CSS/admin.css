@@ -76,5 +76,56 @@
   margin-bottom: 12px;
 }
 
+.actions-cell {
+  white-space: nowrap;
+}
+
+.action-btn {
+  margin-right: 6px;
+  font-size: 12px;
+  padding: 4px 10px;
+  height: auto;
+}
+
+.action-btn.complete-btn {
+  background: #28a745;
+}
+
+.action-btn.complete-btn:hover {
+  background: #218838;
+}
+
+.action-btn.reschedule-btn {
+  background: #ffc107;
+  color: #000;
+}
+
+.action-btn.reschedule-btn:hover {
+  background: #e0a800;
+}
+
+.status-completed {
+  color: #28a745;
+  font-weight: 600;
+}
+
+.status-rescheduled {
+  color: #ffc107;
+  font-weight: 600;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.status-badge.completed {
+  background: #d4edda;
+  color: #155724;
+}
+
 
 

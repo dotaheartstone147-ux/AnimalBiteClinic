@@ -269,6 +269,13 @@
                         const script = document.createElement('script');
                         script.src = '../Javascript/schedule_doses.js';
                         script.id = 'schedule-doses-js';
+                        script.onload = function() {
+                            setTimeout(function() {
+                                if (typeof window.initScheduleDosesPage === 'function') {
+                                    window.initScheduleDosesPage();
+                                }
+                            }, 100);
+                        };
                         mainContent.appendChild(script);
                     }
                     if (url.includes('admin/schedule_doses.html')) {
@@ -283,6 +290,13 @@
                         const script = document.createElement('script');
                         script.src = '../Javascript/schedule_doses.js';
                         script.id = 'schedule-doses-js';
+                        script.onload = function() {
+                            setTimeout(function() {
+                                if (typeof window.initScheduleDosesPage === 'function') {
+                                    window.initScheduleDosesPage();
+                                }
+                            }, 100);
+                        };
                         mainContent.appendChild(script);
                     }
 

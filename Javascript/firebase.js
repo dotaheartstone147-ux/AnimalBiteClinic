@@ -209,6 +209,9 @@ const firebaseConfig = {
                 if (!isNaN(curr2)) reportToday.textContent = String(curr2 + 1);
               }
             } catch(_){}
+          }).then(function() {
+            // Generate automatic vaccination schedules
+            return generateVaccinationSchedules(animalForm.key, vaccineType, now);
           });
         });
     }).catch(function (err) {
@@ -343,6 +346,18 @@ const firebaseConfig = {
         patientIdTd.textContent = (data.patientId || '-')
         tr.appendChild(patientIdTd);
 
+        // Add next appointment date for wristband display (when IoT device is connected)
+        var nextApptTd = document.createElement('td');
+        if (data.nextAppointmentDate) {
+          var apptDate = new Date(data.nextAppointmentDate + 'T00:00:00');
+          var formattedAppt = apptDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+          nextApptTd.textContent = formattedAppt + ' ' + (data.nextAppointmentTime || '09:00');
+          nextApptTd.title = 'Next Appointment: ' + formattedAppt;
+        } else {
+          nextApptTd.textContent = 'N/A';
+        }
+        tr.appendChild(nextApptTd);
+
         tableBody.appendChild(tr);
       });
     });
@@ -442,7 +457,19 @@ const firebaseConfig = {
   window.createBill = createBill;
 
   function markBillPaid(billKey) {
-    return billsDB.child(billKey).update({ status: 'paid' });
+    return billsDB.child(billKey).once('value').then(function(snapshot) {
+      var bill = snapshot.val() || {};
+      return billsDB.child(billKey).update({ 
+        status: 'paid',
+        paidDate: new Date().toISOString()
+      }).then(function() {
+        // Generate receipt
+        if (typeof window.generateReceipt === 'function') {
+          window.generateReceipt(billKey, bill);
+        }
+        return Promise.resolve();
+      });
+    });
   }
   window.markBillPaid = markBillPaid;
 
@@ -661,6 +688,158 @@ const firebaseConfig = {
     });
   }
   window.loadDashboardStats = loadDashboardStats;
+
+  // Generate automatic vaccination schedules based on vaccine type
+  function generateVaccinationSchedules(patientKey, vaccineType, registrationDate) {
+    var schedulesRef = firebase.database().ref('doseSchedules');
+    var promises = [];
+    var baseDate = new Date(registrationDate);
+
+    // Standard Anti-Rabies schedule: Day 0, 3, 7, 14, 28 (5 doses)
+    var antiRabiesSchedule = [0, 3, 7, 14, 28];
+    // Tetanus is typically a single dose, but can have a booster after 4 weeks
+    var tetanusSchedule = [0, 28];
+
+    if (vaccineType === 'Anti-Rabies' || vaccineType === 'Both') {
+      antiRabiesSchedule.forEach(function(dayOffset, index) {
+        var scheduleDate = new Date(baseDate);
+        scheduleDate.setDate(scheduleDate.getDate() + dayOffset);
+        var dateStr = formatDateStr(scheduleDate);
+        var timeStr = '09:00'; // Default time
+        
+        var schedule = {
+          patientKey: patientKey,
+          date: dateStr,
+          time: timeStr,
+          dose: 'Dose ' + (index + 1) + ' (Anti-Rabies)',
+          status: 'Scheduled',
+          vaccineType: 'Anti-Rabies',
+          createdAt: new Date().toISOString()
+        };
+        promises.push(schedulesRef.push(schedule));
+      });
+    }
+
+    if (vaccineType === 'Tetanus' || vaccineType === 'Both') {
+      tetanusSchedule.forEach(function(dayOffset, index) {
+        var scheduleDate = new Date(baseDate);
+        scheduleDate.setDate(scheduleDate.getDate() + dayOffset);
+        var dateStr = formatDateStr(scheduleDate);
+        var timeStr = '09:00';
+        
+        var schedule = {
+          patientKey: patientKey,
+          date: dateStr,
+          time: timeStr,
+          dose: index === 0 ? 'Dose 1 (Tetanus)' : 'Booster (Tetanus)',
+          status: 'Scheduled',
+          vaccineType: 'Tetanus',
+          createdAt: new Date().toISOString()
+        };
+        promises.push(schedulesRef.push(schedule));
+      });
+    }
+
+    // Calculate and store next appointment date for wristband display
+    if (promises.length > 0) {
+      var nextAppointment = new Date(baseDate);
+      if (vaccineType === 'Anti-Rabies' || vaccineType === 'Both') {
+        nextAppointment.setDate(nextAppointment.getDate() + 3); // Next dose is day 3
+      } else {
+        nextAppointment.setDate(nextAppointment.getDate() + 28); // Tetanus booster
+      }
+      
+      // Update patient record with next appointment date
+      animalbiteclinicDB.child(patientKey).update({
+        nextAppointmentDate: formatDateStr(nextAppointment),
+        nextAppointmentTime: '09:00'
+      });
+    }
+
+    return Promise.all(promises);
+  }
+
+  function formatDateStr(d) {
+    if (!d) return '';
+    var dt = d instanceof Date ? d : new Date(d);
+    if (isNaN(dt.getTime())) return '';
+    var y = dt.getFullYear();
+    var m = ('0' + (dt.getMonth() + 1)).slice(-2);
+    var da = ('0' + dt.getDate()).slice(-2);
+    return y + '-' + m + '-' + da;
+  }
+
+  // Automated SMS reminder system - checks schedules and sends reminders
+  function checkAndSendSMSReminders() {
+    if (!window.firebase || !firebase.database) return;
+    
+    var schedulesRef = firebase.database().ref('doseSchedules');
+    var patientsRef = firebase.database().ref('animalbiteclinic');
+    var today = formatDateStr(new Date());
+    var tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    var tomorrowStr = formatDateStr(tomorrow);
+    
+    // Check for appointments tomorrow
+    schedulesRef.orderByChild('date').equalTo(tomorrowStr).once('value').then(function(snap) {
+      snap.forEach(function(child) {
+        var schedule = child.val() || {};
+        if (schedule.status === 'Scheduled' && schedule.patientKey) {
+          // Get patient info
+          patientsRef.child(schedule.patientKey).once('value').then(function(patientSnap) {
+            var patient = patientSnap.val() || {};
+            if (patient.contactNumber) {
+              // Create automated reminder message
+              var message = 'Reminder: Your vaccination appointment is scheduled for tomorrow (' + 
+                           formatDateForDisplay(schedule.date) + ') at ' + (schedule.time || '09:00') + 
+                           '. Please visit Malaria Animal Bite Clinic. Dose: ' + (schedule.dose || 'N/A');
+              
+              // Log the automated reminder (in a real system, this would send actual SMS)
+              console.log('Automated SMS Reminder:', {
+                patientId: patient.patientId,
+                patientName: patient.fullName,
+                contact: patient.contactNumber,
+                message: message,
+                appointmentDate: schedule.date,
+                dose: schedule.dose
+              });
+              
+              // In production, integrate with actual SMS service here
+              // For now, we'll store it in a notifications log
+              var notificationsRef = firebase.database().ref('automatedSMSLog');
+              notificationsRef.push({
+                patientKey: schedule.patientKey,
+                patientId: patient.patientId,
+                contactNumber: patient.contactNumber,
+                message: message,
+                scheduleKey: child.key,
+                sentDate: new Date().toISOString(),
+                status: 'sent'
+              });
+            }
+          });
+        }
+      });
+    });
+  }
+
+  function formatDateForDisplay(dateStr) {
+    if (!dateStr) return '';
+    var date = new Date(dateStr + 'T00:00:00');
+    if (isNaN(date.getTime())) return dateStr;
+    return date.toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric', 
+      year: 'numeric' 
+    });
+  }
+
+  // Run automated SMS check daily (in production, this would be a scheduled job)
+  // For now, check when dashboard loads
+  if (typeof window !== 'undefined') {
+    window.checkSMSReminders = checkAndSendSMSReminders;
+  }
+
   const getElementVal = (id) => {
     return document.getElementById(id).value;
   }

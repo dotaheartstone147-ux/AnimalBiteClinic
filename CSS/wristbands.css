@@ -101,19 +101,24 @@
   border-bottom: 1px solid #e9ecef;
   word-break: break-word;
   overflow-wrap: anywhere;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
 }
 
 
 .wristbands-table th:nth-child(1),
-.wristbands-table td:nth-child(1) { width: 16%; }
+.wristbands-table td:nth-child(1) { width: 12%; }
 .wristbands-table th:nth-child(2),
-.wristbands-table td:nth-child(2) { width: 16%; }
+.wristbands-table td:nth-child(2) { width: 12%; }
 .wristbands-table th:nth-child(3),
-.wristbands-table td:nth-child(3) { width: 18%; white-space: nowrap; }
+.wristbands-table td:nth-child(3) { width: 14%; white-space: nowrap; }
 .wristbands-table th:nth-child(4),
-.wristbands-table td:nth-child(4) { width: 25%; }
+.wristbands-table td:nth-child(4) { width: 20%; }
 .wristbands-table th:nth-child(5),
-.wristbands-table td:nth-child(5) { width: 25%; white-space: nowrap; }
+.wristbands-table td:nth-child(5) { width: 12%; white-space: nowrap; }
+.wristbands-table th:nth-child(6),
+.wristbands-table td:nth-child(6) { width: 20%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 .wristbands-table tbody tr:hover {
   background: #f8f9fa;
